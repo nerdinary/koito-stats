@@ -1,0 +1,25 @@
+# Lives next to Koito on the VPS, e.g. ~/dkr/koito-stats/docker-compose.yml
+services:
+  koito-stats:
+    build: .
+    image: koito-stats:local
+    container_name: koito-stats
+    restart: unless-stopped
+    # run as the host user that owns ./data (set STATS_UID/STATS_GID in .env)
+    user: "${STATS_UID:-1000}:${STATS_GID:-1000}"
+    environment:
+      - STATS_TZ=Australia/Sydney
+      - REFRESH_INTERVAL=3600
+      # - LASTFM_API_KEY=...      # optional: genre fallback for artists MusicBrainz doesn't know
+    volumes:
+      # Koito's data dir, read-only. The app also opens the DB in SQLite read-only mode.
+      - ../koito/koito:/koito:ro
+      # koito-stats' own cache (genres, similar artists, computed results)
+      - ./data:/data
+    networks:
+      - caddy
+
+networks:
+  caddy:
+    external: true
+    name: web

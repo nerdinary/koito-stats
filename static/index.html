@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Listening Stats</title>
+  <meta name="description" content="Genres, obsessions, comebacks and what to try next, from my Koito scrobbles.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='9' fill='%232a78d6'/><circle cx='26' cy='8' r='4' fill='none' stroke='%232a78d6' stroke-width='2'/><circle cx='7' cy='26' r='3' fill='%232a78d6'/></svg>">
+  <link rel="preload" href="static/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+  <header class="hero" id="hero">
+    <div class="wrap hero-inner">
+      <a class="back" href="../">Back to Koito</a>
+      <div class="hero-grid">
+        <figure class="record" id="record" aria-hidden="false"></figure>
+        <div class="hero-text">
+          <h1 id="headline">Your listening</h1>
+          <p class="lede" id="lede">Crunching your listening history…</p>
+          <dl class="stats" id="stats"></dl>
+          <div class="legend hero-legend" id="hero-legend"></div>
+          <p class="record-note" id="record-note"></p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <p class="loading" id="loading" hidden></p>
+
+    <section class="block" id="insights-card" hidden>
+      <h2>What stands out</h2>
+      <ul class="insights" id="insights"></ul>
+    </section>
+
+    <section class="block" id="genre-card" hidden>
+      <div class="block-head">
+        <div>
+          <h2>How your taste has shifted</h2>
+          <p class="sub">Share of each year's plays by genre group. Artists with several genres are split between them.</p>
+        </div>
+      </div>
+      <div class="legend" id="genre-legend"></div>
+      <div class="chart" id="genre-chart"></div>
+      <p class="footnote" id="genre-coverage"></p>
+      <details class="table-view">
+        <summary>Show as table</summary>
+        <div id="genre-table"></div>
+      </details>
+    </section>
+
+    <section class="block" id="movers-card" hidden>
+      <h2>Genres on the move</h2>
+      <p class="sub">How much each genre's share of your plays changed in the last 12 months, compared with the 3 years before. Bars are coloured by genre group.</p>
+      <div class="movers" id="movers" role="list"></div>
+      <div id="movers-new"></div>
+    </section>
+
+    <section class="block explore-card bleed bleed-top" id="explore-card" hidden>
+      <div class="block-head">
+        <div>
+          <h2>Explore artists</h2>
+          <p class="sub">Pick an artist to see who's similar. Click any circle to move there.</p>
+        </div>
+        <div class="seg" role="group" aria-label="Circle size" id="size-toggle">
+          <button data-v="plays" aria-pressed="true">All time</button>
+          <button data-v="plays_12m" aria-pressed="false">Last 12 months</button>
+        </div>
+      </div>
+      <div class="explore-controls">
+        <div class="search">
+          <input id="search" type="search" placeholder="Search your artists…" autocomplete="off" aria-label="Search artists">
+          <ul id="search-results" class="search-results" role="listbox" hidden></ul>
+        </div>
+        <div class="chips" id="quick-picks"></div>
+      </div>
+      <nav class="trail" id="trail" aria-label="Exploration path"></nav>
+      <div class="explore-body">
+        <div class="bubbles" id="bubbles">
+          <div class="bubble-legend">
+            <span><i class="key-heard"></i>In your history, sized by plays</span>
+            <span><i class="key-new"></i>New to you</span>
+            <span>Colour shows genre group</span>
+          </div>
+          <p class="bubble-empty" id="bubble-empty">Choose an artist above to start exploring.</p>
+        </div>
+        <aside class="panel" id="panel"></aside>
+      </div>
+    </section>
+
+    <section class="block bleed bleed-bottom" id="recs-card" hidden>
+      <h2>Discover</h2>
+      <p class="sub">Artists you haven't played, ranked by how many of your favourites (weighted towards the last 12 months) they sit next to.</p>
+      <div class="recs" id="recs"></div>
+      <button class="more" id="recs-more" hidden>Show more</button>
+    </section>
+
+    <section class="block" id="time-card" hidden>
+      <h2>Listening over the years</h2>
+      <div class="multiples">
+        <figure><figcaption>Plays per year <span class="muted-note">(* this year so far)</span></figcaption><div id="sm-plays"></div></figure>
+        <figure><figcaption>Plays from artists new to you that year</figcaption><div id="sm-new"></div></figure>
+        <figure><figcaption>Variety <span class="hint" tabindex="0" title="How many artists you'd need, played equally, to get the same spread. Higher means more varied listening.">?</span></figcaption><div id="sm-div"></div></figure>
+      </div>
+    </section>
+
+    <section class="block" id="heat-card" hidden>
+      <div class="block-head">
+        <div>
+          <h2>When you listen</h2>
+          <p class="sub" id="heat-sub">Plays by weekday and hour.</p>
+        </div>
+        <div class="seg" role="group" aria-label="Period" id="heat-toggle">
+          <button data-v="last12" aria-pressed="true">Last 12 months</button>
+          <button data-v="all" aria-pressed="false">All time</button>
+        </div>
+      </div>
+      <div class="chart" id="heatmap"></div>
+    </section>
+
+    <section class="block" id="deck-card" hidden>
+      <h2>Artists over time</h2>
+      <p class="sub">Who took over, who came back and who's climbing. Click a card behind to bring it to the front.</p>
+      <div class="deck" id="deck">
+        <article class="dcard" data-card="obs" aria-labelledby="obs-title">
+          <button class="dcard-head" type="button"><span class="dcard-title" id="obs-title">Obsessions</span><span class="dcard-count" id="obs-count"></span></button>
+          <div class="dcard-body">
+            <p class="sub">Months where one artist took over: at least 12% of your plays, or a sudden spike to three times their usual level.</p>
+            <ol class="rows" id="obsessions"></ol>
+          </div>
+        </article>
+        <article class="dcard" data-card="cb" aria-labelledby="cb-title">
+          <button class="dcard-head" type="button"><span class="dcard-title" id="cb-title">Comebacks</span><span class="dcard-count" id="cb-count"></span></button>
+          <div class="dcard-body">
+            <p class="sub">Artists you returned to after two or more years away.</p>
+            <ol class="rows" id="comebacks"></ol>
+          </div>
+        </article>
+        <article class="dcard" data-card="rise" aria-labelledby="rise-title">
+          <button class="dcard-head" type="button"><span class="dcard-title" id="rise-title">On the rise</span><span class="dcard-count" id="rise-count"></span></button>
+          <div class="dcard-body">
+            <p class="sub">Biggest gains in the last 90 days, compared with the year before.</p>
+            <ol class="rows" id="rising"></ol>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="status" hidden></div>
+  <script src="static/vendor/d3.v7.min.js"></script>
+  <script src="static/app.js"></script>
+</body>
+</html>
