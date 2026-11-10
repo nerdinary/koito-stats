@@ -2,6 +2,18 @@
 
 Listening analytics for a [Koito](https://github.com/gabehf/koito) instance, served at `/stats` next to it.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/hero-dark.png">
+  <img alt="koito-stats: a vinyl record where each groove is a year of listening, split by genre, next to a headline summary and stats" src="docs/hero-light.png">
+</picture>
+
+<details>
+<summary>Full page</summary>
+
+![The full koito-stats page: findings, genre share over time, genres on the move, artist explorer, discover, yearly trends, listening punch card and artists over time](docs/full.png)
+
+</details>
+
 - **Genre shift**: share of plays per genre group per year, plus fine-grained genres rising and fading
 - **Explore**: click through similar artists; circle size = your plays, hollow circles = artists you've never played
 - **Discover**: unheard artists similar to many of your favourites
