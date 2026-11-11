@@ -10,7 +10,7 @@ services:
     environment:
       - STATS_TZ=Australia/Sydney
       - REFRESH_INTERVAL=3600
-      # - LASTFM_API_KEY=...      # optional: genre fallback for artists MusicBrainz doesn't know
+      - LASTFM_API_KEY=${LASTFM_API_KEY:-}   # optional, set in .env: genre fallback for artists MusicBrainz doesn't know
     volumes:
       # Koito's data dir, read-only. The app also opens the DB in SQLite read-only mode.
       - ../koito/koito:/koito:ro
